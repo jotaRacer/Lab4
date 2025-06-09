@@ -16,6 +16,7 @@ public class Paciente {
     private long tiempoLlegada;
     private String estado;
     private String area;
+    private int minutoAtencion;
     private Stack<String> historialCambios;
 
 
@@ -44,29 +45,47 @@ public class Paciente {
     public void setCategoria(int nuevaCategoria){
         this.categoria=nuevaCategoria;
     }
-    public void setArea(String area){
-        this.area=area;
+    public void setArea(String Area){
+        this.area=Area;
     }
-
+    public String getNombre() {
+        return nombre;
+    }
+    public String getApellido() {
+        return apellido;
+    }
+    public String getEstado(){
+        return estado;
+    }
+    public String getArea(){
+        return area;
+    }
+    public int getMinutoAtencion() {
+        return minutoAtencion;
+    }
+    public void setTiempoLlegada(long tiempoLlegada) {
+        this.tiempoLlegada = tiempoLlegada;
+    }
+    public void setMinutoAtencion(int minuto) {
+        this.minutoAtencion = minuto;
+    }
     
+    
+    
+    
+   
 
-    public long tiempoEsperaActual() {
-        ZonedDateTime llegada = Instant.ofEpochSecond(tiempoLlegada).atZone(ZoneId.of("America/Santiago"));
-        
-        ZonedDateTime ahora = ZonedDateTime.now(ZoneId.of("America/Santiago"));
-
-        Duration duracion = Duration.between(llegada, ahora);
-
-        return duracion.toMinutes();
+    public long tiempoEsperaActual(int minutoSimulacion) {
+        // Usar el minuto de simulación en lugar de la hora actual real
+        long tiempoEsperado = minutoSimulacion - tiempoLlegada;  // tiempoLlegada es el minuto cuando llegó el paciente
+    
+        return tiempoEsperado; // Este valor es en minutos
     }
 
     public void registrarCambio(String descripcion){
         historialCambios.push(descripcion);
     }
 
-    public String ultimoCambio(){
-        return historialCambios.isEmpty()? "El paciente no tiene cambios" : historialCambios.pop();
-    }
 
     
 }

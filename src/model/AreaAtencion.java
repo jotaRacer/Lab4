@@ -1,6 +1,7 @@
 package model;
 
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.PriorityQueue;
 
 import util.PacienteComparator;
@@ -27,7 +28,7 @@ public class AreaAtencion {
             System.out.println("No se puede ingresar el paciente, el área está saturada.");
         }
     }
-    
+
     public Paciente atenderPaciente() {
         if (pacientesHeap.isEmpty()) {
             System.out.println("No hay pacientes para atender.");
@@ -37,6 +38,19 @@ public class AreaAtencion {
         p.setEstado("atendido");
         p.registrarCambio("Paciente atendido");
         return p;
+    }
+
+    public List<Paciente> obtenerPacientesPorHeapSort(){
+        List<Paciente> listaOrdenadPacientes = new ArrayList<>();
+        PriorityQueue<Paciente> copiaHeapPacientes= new PriorityQueue<>(new PacienteComparator());
+        copiaHeapPacientes.addAll(pacientesHeap);
+
+        while(!copiaHeapPacientes.isEmpty()){
+            listaOrdenadPacientes.add(copiaHeapPacientes.poll());
+        }
+        return listaOrdenadPacientes;
+
+
     }
     
     

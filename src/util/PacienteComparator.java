@@ -11,7 +11,5 @@ public class PacienteComparator implements Comparator<Paciente>{
             }
             return Long.compare(p1.getTiempoLlegada(), p2.getTiempoLlegada());
         }
-    
-
-    
+ 
 }

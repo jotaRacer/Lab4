@@ -5,15 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
-import model.AreaAtencion;
-import model.Paciente;
 import util.AsignadorArea;
 import util.AsignadorCategoria;
 import util.PacienteComparator;
 
 public class Hospital {
     Map<String,Paciente> pacientesTotales;
-    PriorityQueue<Paciente> colaAtencion;
+    public PriorityQueue<Paciente> colaAtencion;
     Map<String, AreaAtencion> areasAtencion;
     List<Paciente> pacientesAtendidos;
 
@@ -60,7 +58,7 @@ public class Hospital {
         return pacientesPorCategoria;
     }
 
-    public AreaAtencion obteneAreaAtencion(String nombre){
+    public AreaAtencion obtenerAreaAtencion(String nombre){
         return areasAtencion.get(nombre);
     }
 
@@ -71,23 +69,23 @@ public class Hospital {
         System.out.println("No hay pacientes en espera.");
         return null;
     }
-    String areaAsignada = AsignadorArea.asignarAreaAleatoria();
 
     String area = AsignadorArea.asignarAreaAleatoria();
     paciente.setArea(area);
 
     paciente.setEstado("atendido");
 
-    paciente.registrarCambio("Paciente atendido en área: " + areaAsignada);
-
+    paciente.registrarCambio("Paciente atendido en área: " + area);
+    System.out.println("paciente atendido");
     return paciente;
+    
     }
    public void registrarPaciente(Paciente p) {
         colaAtencion.offer(p);
 
         pacientesTotales.put(p.getId(), p);
 
-        AsignadorCategoria.asignarCategoriaAleatoria(p);  
+        p.setCategoria(AsignadorCategoria.asignarCategoriaAleatoria());  
 
         asignarAreaDeAtencion(p); 
     }
@@ -95,6 +93,62 @@ public class Hospital {
         String areaAsignada = AsignadorArea.asignarAreaAleatoria();  
         p.setArea(areaAsignada);  
     }
+
+    public void registrarPacienteAtendido(Paciente p, int minutoAtencion) {
+        pacientesAtendidos.add(p);
+        p.setEstado("atendido");
+        p.registrarCambio("Atendido a los " + (minutoAtencion - p.getTiempoLlegada()) + " minutos");
+    }
+    //metodo extra para calcular el tiempo maximo de espera.
+    public int tiempoMaximoEspera(int categoria) {
+        switch (categoria) {
+            case 1: return 10;
+            case 2: return 20;
+            case 3: return 35;
+            case 4: return 40;
+            case 5: return 120;
+            default: return 999;
+        }
+    }
+
+    //metodo extra para imprimir las estadisticas de la simulacion.
+    public void generarInformeFinal(List<Paciente> pacientesExcedidos) {
+        System.out.println("\n----- INFORME FINAL DE LA SIMULACIÓN -----\n");
+    
+        Map<Integer, List<Integer>> tiemposPorCategoria = new HashMap<>();
+    
+        for (Paciente p : pacientesAtendidos) {
+            int categoria = p.getCategoria();
+            int tiempoEspera = p.getMinutoAtencion() - (int) p.getTiempoLlegada();
+
+    
+            tiemposPorCategoria
+                .computeIfAbsent(categoria, k -> new ArrayList<>())
+                .add(tiempoEspera);
+        }
+    
+        for (int categoria = 1; categoria <= 5; categoria++) {
+            List<Integer> tiempos = tiemposPorCategoria.getOrDefault(categoria, new ArrayList<>());
+            int total = tiempos.size();
+            double promedio = tiempos.stream().mapToInt(Integer::intValue).average().orElse(0);
+    
+            System.out.println("Categoría C" + categoria + ":");
+            System.out.println("  Pacientes atendidos: " + total);
+            System.out.println("  Promedio de espera: " + Math.round(promedio) + " minutos\n");
+        }
+    
+        System.out.println("Pacientes que excedieron el tiempo máximo de espera: " + pacientesExcedidos.size());
+        for (Paciente p : pacientesExcedidos) {
+            System.out.println("  - " + p.getId() + " | " + p.getNombre() + " " + p.getApellido() +
+                    " | Categoría C" + p.getCategoria());
+        }
+    }
+    
+
+    
+    
+    }
+
     
     
     
@@ -102,4 +156,4 @@ public class Hospital {
 
 
 
-}
+
